@@ -1,0 +1,14 @@
+set title "Performance"
+set xlabel "Number of elements"
+set ylabel "Runtime (seconds)"
+
+#set style data linespoints
+set style data lines
+set key autotitle columnhead
+set key top left
+
+set term svg
+set output "plot.svg"
+
+#plot "bench"
+plot for [i=2:5] 'stats' using 1:i
