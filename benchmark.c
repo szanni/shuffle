@@ -42,7 +42,7 @@ main (void)
 	size_t n;
 	size_t i;
 	size_t r;
-	size_t const max = 1000000;
+	size_t const max = 10000000;
 	size_t const repeat = 20;
 	clock_t s, e;
 	double t;
