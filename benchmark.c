@@ -26,9 +26,6 @@
 #include "fyiter.h"
 
 #define BENCH(msg, setup, body, teardown) do {\
-	puts("# " msg);\
-	printf("# %-10s %s\n", "Size", "Time (sec)"); \
-	for(n = 1; n <= max; n<<=step){ \
 		do setup while(0); \
 		s = clock(); \
 		for(r = 0; r < repeat; ++r)\
@@ -36,9 +33,7 @@
 		e = clock(); \
 		do teardown while(0); \
 		t = 1.0f * (e - s) / CLOCKS_PER_SEC / repeat; \
-		printf("  %-10zu %f\n", n, t); \
-	} \
-	puts("");\
+		printf(" %-15f", t); \
 } while(0)
 
 int
@@ -47,106 +42,55 @@ main (void)
 	size_t n;
 	size_t i;
 	size_t r;
-	size_t const max = 1000000000;
+	size_t const max = 1000000;
 	size_t const repeat = 20;
-	size_t const step = 1;
 	clock_t s, e;
 	double t;
 	struct fyiter_ctx fctx;
 	struct shufflep_ctx sctx;
 	
-	BENCH("fy init",
-		{assert(fyiter_new(&fctx, n) == 0);},
-		{fyiter_init(&fctx, n);},
-		{fyiter_free(&fctx);}
-	);
-	
-	BENCH("shufflep init",
-		{},
-		{shufflep_init(&sctx, n, rand());},
-		{}
-	);
+	printf("%-15s %-15s %-15s %-15s %-15s\n", "N", "FY-init", "shufflep-init", "FY-iter-all", "shufflep-iter-all");
 
-	BENCH("fy iter all elements",
-		{assert(fyiter_new(&fctx, n) == 0);},
-		{
-			for (i = 0; i < n; ++i){
+	for(n = 10; n <= max; n*=1.1){
+		printf("%-10zu", n);
+
+		BENCH("FY-init",
+				{assert(fyiter_new(&fctx, n) == 0);},
+				{fyiter_init(&fctx, n);},
+				{fyiter_free(&fctx);}
+		     );
+
+		BENCH("shufflep-init",
+				{},
+				{shufflep_init(&sctx, n, rand());},
+				{}
+		     );
+
+		BENCH("FY-iter-all",
+				{assert(fyiter_new(&fctx, n) == 0);},
+				{
+				for (i = 0; i < n; ++i){
 				fyiter_next(&fctx);
-			}
-			fyiter_reset(&fctx);
-		},
-		{fyiter_free(&fctx);}
-	);
-		
-	BENCH("shufflep iter all elements",
-		{shufflep_init(&sctx, n, rand());},
-		{
-			for (i = 0; i < n; ++i){
+				}
+				fyiter_reset(&fctx);
+				},
+				{fyiter_free(&fctx);}
+		     );
+
+		BENCH("shufflep-iter-all",
+				{shufflep_init(&sctx, n, rand());},
+				{
+				for (i = 0; i < n; ++i){
 				shufflep_index(&sctx, i);
-			}
-			shufflep_reseed(&sctx, rand());
-		},
-		{}
-	);
+				}
+				shufflep_reseed(&sctx, rand());
+				},
+				{}
+		     );
 
-	/*
-	for(n = 1; n <= max; n<<=step){
-		struct fyiter_ctx ctx;
-		assert(fyiter_new(&fctx, n) == 0);
-
-		s = clock();
-		for(r = 0; r < repeat; ++r)
-			fyiter_init(&fctx, n);
-
-		e = clock();
-		fyiter_free(&fctx);
-		t = 1.0f * (e - s) / CLOCKS_PER_SEC / repeat;
-		printf("Size: %10u Time: %f\n", n, t);
+		puts("");
+		fflush(stdout);
 	}
-	
-	for(n = 1; n <= max; n<<=step){
 
-		s = clock();
-		for(r = 0; r < repeat; ++r)
-			shufflep_init(&sctx, n, rand());
-
-		e = clock();
-		t = 1.0f * (e - s) / CLOCKS_PER_SEC / repeat;
-		printf("Size: %10u Time: %f\n", n, t);
-	}
-	
-	for(n = 1; n <= max; n<<=step){
-		assert(fyiter_new(&fctx, n) == 0);
-
-		s = clock();
-		for (r = 0; r < repeat; ++r){
-			for (i = 0; i < n; ++i){
-				fyiter_next(&fctx);
-			}
-			fyiter_reset(&fctx);
-		}
-
-		e = clock();
-		fyiter_free(&fctx);
-		t = 1.0f * (e - s) / CLOCKS_PER_SEC / repeat;
-		printf("Size: %10u Time: %f\n", n, t);
-	}
-	
-
-	for(n = 1; n <= max; n<<=step){
-		shufflep_init(&sctx, n, rand());
-
-		s = clock();
-		for(r = 0; r < repeat; ++r){
-			for (i = 0; i < n; ++i){
-				shufflep_index(&sctx, i);
-			}
-			shufflep_reseed(&sctx, rand());
-		}
-
-		e = clock();
-		t = 1.0f * (e - s) / CLOCKS_PER_SEC / repeat;
-		printf("Size: %10u Time: %f\n", n, t);
-	}
-	*/
+	return 0;
 }
