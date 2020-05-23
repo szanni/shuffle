@@ -18,7 +18,7 @@
 #ifndef SHUFFLEP_H
 #define SHUFFLEP_H
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <limits.h>
 
 struct shufflep_ctx {
@@ -113,7 +113,7 @@ _shufflep_hash (size_t x)
 static size_t
 _shufflep_round (struct shufflep_ctx *ctx, size_t r, size_t i)
 {
-	size_t k_i = ctx->key >> (i*sizeof(size_t)*CHAR_BIT/_SHUFFLEP_ROUNDS);
+	size_t k_i = ctx->key >> (i*sizeof(ctx->key)*CHAR_BIT/_SHUFFLEP_ROUNDS);
 	return _shufflep_hash(r^k_i)^k_i;
 }
 
