@@ -1,4 +1,4 @@
-.PHONY: all plot install dist clean distclean
+.PHONY: all plot install dist clean distclean bias
 
 INSTALL ?= install
 PREFIX ?= /usr/local
@@ -10,10 +10,11 @@ PACKAGE = shufflep
 VERSION = 0.0.0
 
 DIST = Makefile shufflep.h example.c benchmark.c fyiter.h LICENSE README.md plot.plg plot.svg
+DIST += chisqr-bias.c chisqr-bias.R
 
 all:
 	@echo 'As this is a header only library there is nothing to be done.'
-	@echo 'See `make example`, `make benchmark`, `make stats`, `make plot`, and `make install`.'
+	@echo 'See `make example`, `make stats`, `make plot`, `make bias`, and `make install`.'
 
 benchmark: benchmark.c shufflep.h fyiter.h
 	$(CC) $< -o $@ $(CFLAGS) $(LDFLAGS)
@@ -26,6 +27,12 @@ stats: benchmark
 
 plot.svg: plot.plg stats
 	gnuplot -p plot.plg
+
+chisqr-bias: chisqr-bias.c shufflep.h
+	$(CC) $< -o $@ $(CFLAGS) $(LDFLAGS)
+
+bias: chisqr-bias chisqr-bias.R
+	./chisqr-bias | Rscript chisqr-bias.R
 
 plot: plot.svg
 
@@ -40,7 +47,7 @@ dist: $(DIST)
 	xz -f $(PACKAGE)-$(VERSION).tar
 
 clean:
-	rm -f example benchmark stats
+	rm -f example benchmark stats chisqr-bias
 
 distclean: clean
 	rm -rf $(PACKAGE)-$(VERSION){,.tar.gz,.tar.xz}
