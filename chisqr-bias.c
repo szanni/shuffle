@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define SHUFFLEP_IMPLEMENTATION
-#include "shufflep.h"
+#define SHUFFLE_IMPLEMENTATION
+#include "shuffle.h"
 
 int
 main(void)
@@ -12,8 +12,8 @@ main(void)
 	const unsigned k = n*100;
 	uint16_t O[n][n];
 
-	struct shufflep_ctx ctx;
-	shufflep_init(&ctx, n, 0);
+	struct shuffle_ctx ctx;
+	shuffle_init(&ctx, n, 0);
 
 	unsigned i, j;
 	for (i = 0; i < n; ++i)
@@ -21,9 +21,9 @@ main(void)
 			O[i][j] = 0;
 
 	for (i = 0; i < k; ++i) {
-		shufflep_reseed(&ctx, rand());
+		shuffle_reseed(&ctx, rand());
 		for (j = 0; j < n; ++j)
-			O[j][shufflep_index(&ctx, j)] += 1;
+			O[j][shuffle_index(&ctx, j)] += 1;
 	}
 
 	for (i = 0; i < n; ++i) {

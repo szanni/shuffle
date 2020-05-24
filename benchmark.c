@@ -19,8 +19,8 @@
 #include <stdio.h>
 #include <time.h>
 
-#define SHUFFLEP_IMPLEMENTATION
-#include "shufflep.h"
+#define SHUFFLE_IMPLEMENTATION
+#include "shuffle.h"
 
 #define FYITER_IMPLEMENTATION
 #include "fyiter.h"
@@ -47,9 +47,9 @@ main (void)
 	clock_t s, e;
 	double t;
 	struct fyiter_ctx fctx;
-	struct shufflep_ctx sctx;
+	struct shuffle_ctx sctx;
 	
-	printf("%-15s %-15s %-15s %-15s %-15s\n", "N", "FY-init", "shufflep-init", "FY-iter-all", "shufflep-iter-all");
+	printf("%-15s %-15s %-15s %-15s %-15s\n", "N", "FY-init", "shuffle-init", "FY-iter-all", "shuffle-iter-all");
 
 	for(n = 10; n <= max; n*=1.1){
 		printf("%-15zu", n);
@@ -60,9 +60,9 @@ main (void)
 				{fyiter_free(&fctx);}
 		     );
 
-		BENCH("shufflep-init",
+		BENCH("shuffle-init",
 				{},
-				{shufflep_init(&sctx, n, rand());},
+				{shuffle_init(&sctx, n, rand());},
 				{}
 		     );
 
@@ -77,13 +77,13 @@ main (void)
 				{fyiter_free(&fctx);}
 		     );
 
-		BENCH("shufflep-iter-all",
-				{shufflep_init(&sctx, n, rand());},
+		BENCH("shuffle-iter-all",
+				{shuffle_init(&sctx, n, rand());},
 				{
 				for (i = 0; i < n; ++i){
-				shufflep_index(&sctx, i);
+				shuffle_index(&sctx, i);
 				}
-				shufflep_reseed(&sctx, rand());
+				shuffle_reseed(&sctx, rand());
 				},
 				{}
 		     );

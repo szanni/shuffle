@@ -16,8 +16,8 @@
 
 #include <stdio.h>
 
-#define SHUFFLEP_IMPLEMENTATION
-#include "shufflep.h"
+#define SHUFFLE_IMPLEMENTATION
+#include "shuffle.h"
 
 int
 main (void)
@@ -42,13 +42,13 @@ main (void)
 
 	size_t size = sizeof(list)/sizeof(list[0]);
 
-	struct shufflep_ctx ctx;
-	shufflep_init(&ctx, size, 0xBAD5EEED);
+	struct shuffle_ctx ctx;
+	shuffle_init(&ctx, size, 0xBAD5EEED);
 
 	size_t i, j, k;
 	for (i = 0; i < size; ++i) {
-		j = shufflep_index(&ctx, i);
-		k = shufflep_index_invert(&ctx, j);
+		j = shuffle_index(&ctx, i);
+		k = shuffle_index_invert(&ctx, j);
 		printf("%2zu %6s   %2zu %6s\n", j, list[j], k, list[k]);
 	}
 

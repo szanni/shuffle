@@ -1,4 +1,4 @@
-shufflep
+shuffle
 ========
 
 A pseudo random permutation generator for array indices — in plain terms, an algorithm to iterate
@@ -12,29 +12,29 @@ Usage
 
 This is a single-file library so just include the header where needed and specify one file that the implementation resides in:
 ```c
-#define SHUFFLEP_IMPLEMENTATION
-#include "shufflep.h"
+#define SHUFFLE_IMPLEMENTATION
+#include "shuffle.h"
 ```
 
-Then just create and initialize a shufflep context:
+Then just create and initialize a shuffle context:
 ```c
-struct shufflep_ctx ctx;
-shufflep_init(&ctx, size, 0xBAD5EEED);
+struct shuffle_ctx ctx;
+shuffle_init(&ctx, size, 0xBAD5EEED);
 ```
 
 And iterate over your data using the random index:
 ```c
-shufflep_index(&ctx, i);
+shuffle_index(&ctx, i);
 ```
 
 Reseed:
 ```c
-shufflep_reseed(&ctx, 0xBAAD5EED);
+shuffle_reseed(&ctx, 0xBAAD5EED);
 ```
 
 You can also get the original index by running:
 ```c
-shufflep_index_invert(&ctx, ri);
+shuffle_index_invert(&ctx, ri);
 ```
 
 Example
@@ -46,8 +46,8 @@ Full example, see included [example.c](example.c).
 ```c
 #include <stdio.h>
 
-#define SHUFFLEP_IMPLEMENTATION
-#include "shufflep.h"
+#define SHUFFLE_IMPLEMENTATION
+#include "shuffle.h"
 
 int
 main (void)
@@ -72,13 +72,13 @@ main (void)
 
 	size_t size = sizeof(list)/sizeof(list[0]);
 
-	struct shufflep_ctx ctx;
-	shufflep_init(&ctx, size, 0xBAD5EEED);
+	struct shuffle_ctx ctx;
+	shuffle_init(&ctx, size, 0xBAD5EEED);
 
 	size_t i, j, k;
 	for (i = 0; i < size; ++i) {
-		j = shufflep_index(&ctx, i);
-		k = shufflep_index_invert(&ctx, j);
+		j = shuffle_index(&ctx, i);
+		k = shuffle_index_invert(&ctx, j);
 		printf("%2zu %6s   %2zu %6s\n", j, list[j], k, list[k]);
 	}
 
@@ -115,7 +115,7 @@ Fisher-Yates comes with several constraints: Your data has to be either mutable 
 
 A full comparison of constraints and complexities can be found in the following table:
 
-|                                 | Classic FY | Inside-out FY | shufflep |
+|                                 | Classic FY | Inside-out FY | shuffle  |
 |---------------------------------|------------|---------------|----------|
 | Needs mutable data              | Y          | N             | N        |
 | Memory                          | O(1)       | O(n)          | O(1)     |
@@ -143,7 +143,7 @@ Performance
 
 ![performance graph](plot.svg)
 
-Interestingly shufflep seems to outperform the classic Fisher-Yates algorithm with bigger
+Interestingly shuffle seems to outperform the classic Fisher-Yates algorithm with bigger
 inputs.
 
 My guess is, that we are essentially profiling the system's `rand()` implementation more

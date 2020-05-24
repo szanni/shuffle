@@ -15,38 +15,38 @@
  */
 
 
-#ifndef SHUFFLEP_H
-#define SHUFFLEP_H
+#ifndef SHUFFLE_H
+#define SHUFFLE_H
 
 #include <stdint.h>
 #include <limits.h>
 
-struct shufflep_ctx {
+struct shuffle_ctx {
 	size_t key;
 	size_t nitems;
 	/* Half block size in bits */
 	size_t hbsz;
 };
 
-void shufflep_init(struct shufflep_ctx *ctx, size_t nitems, size_t seed);
+void shuffle_init(struct shuffle_ctx *ctx, size_t nitems, size_t seed);
 
-size_t shufflep_index(struct shufflep_ctx *ctx, size_t index);
+size_t shuffle_index(struct shuffle_ctx *ctx, size_t index);
 
-size_t shufflep_index_invert(struct shufflep_ctx *ctx, size_t index);
+size_t shuffle_index_invert(struct shuffle_ctx *ctx, size_t index);
 
-void shufflep_reseed(struct shufflep_ctx *ctx, size_t seed);
+void shuffle_reseed(struct shuffle_ctx *ctx, size_t seed);
 
 #endif
 
 
-#ifdef SHUFFLEP_IMPLEMENTATION
+#ifdef SHUFFLE_IMPLEMENTATION
 
 /* Power of 2! Otherwise change round function sliding window */
-#define _SHUFFLEP_ROUNDS 4
+#define _SHUFFLE_ROUNDS 4
 
-enum _shufflep_op {
-	_shufflep_op_encrypt,
-	_shufflep_op_decrypt
+enum _shuffle_op {
+	_shuffle_op_encrypt,
+	_shuffle_op_decrypt
 };
 
 /* Calculate needed block cipher size in bits.
@@ -54,7 +54,7 @@ enum _shufflep_op {
  * minimum of 4 bits to not degenerate.
  */
 static size_t
-_shufflep_block_size (size_t n)
+_shuffle_block_size (size_t n)
 {
 	/* Number of bits needed to represent n; equal to sizeof(size_t) * CHAR_BITS - clz(n) */
 	size_t bsz = 1;
@@ -68,16 +68,16 @@ _shufflep_block_size (size_t n)
 }
 
 void
-shufflep_init (struct shufflep_ctx *ctx, size_t nitems, size_t seed)
+shuffle_init (struct shuffle_ctx *ctx, size_t nitems, size_t seed)
 {
 	ctx->key = seed;
 	ctx->nitems = nitems;
-	ctx->hbsz = _shufflep_block_size(nitems) / 2;
+	ctx->hbsz = _shuffle_block_size(nitems) / 2;
 }
 
 /* taken from hash-prospector */
 static uint32_t
-_shufflep_hash32 (uint32_t x)
+_shuffle_hash32 (uint32_t x)
 {
 	x ^= x >> 16;
 	x *= UINT32_C(0x7feb352d);
@@ -89,7 +89,7 @@ _shufflep_hash32 (uint32_t x)
 
 /* splittable64 */
 static uint64_t
-_shufflep_hash64 (uint64_t x)
+_shuffle_hash64 (uint64_t x)
 {
 	x ^= x >> 30;
 	x *= UINT64_C(0xbf58476d1ce4e5b9);
@@ -100,28 +100,28 @@ _shufflep_hash64 (uint64_t x)
 }
 
 static size_t
-_shufflep_hash (size_t x)
+_shuffle_hash (size_t x)
 {
 	switch (sizeof(size_t)) {
 		case 4:
-			return _shufflep_hash32(x);
+			return _shuffle_hash32(x);
 		case 8:
-			return _shufflep_hash64(x);
+			return _shuffle_hash64(x);
 	}
 }
 
 static size_t
-_shufflep_round (struct shufflep_ctx *ctx, size_t r, size_t i)
+_shuffle_round (struct shuffle_ctx *ctx, size_t r, size_t i)
 {
-	size_t k_i = ctx->key >> (i*sizeof(ctx->key)*CHAR_BIT/_SHUFFLEP_ROUNDS);
-	return _shufflep_hash(r^k_i)^k_i;
+	size_t k_i = ctx->key >> (i*sizeof(ctx->key)*CHAR_BIT/_SHUFFLE_ROUNDS);
+	return _shuffle_hash(r^k_i)^k_i;
 }
 
 /* Feistel network to encrypt or decrypt a value. Cycle walk until we have a
  * desired value in target range, see format preserving encryption.
  */
 static size_t
-_shufflep_cipher (struct shufflep_ctx *ctx, size_t val, enum _shufflep_op op)
+_shuffle_cipher (struct shuffle_ctx *ctx, size_t val, enum _shuffle_op op)
 {
 	size_t mask = (1 << ctx->hbsz) - 1;
 
@@ -132,11 +132,11 @@ _shufflep_cipher (struct shufflep_ctx *ctx, size_t val, enum _shufflep_op op)
 		r = val & mask;
 
 		size_t i, r_i;
-		for (i = 0; i < _SHUFFLEP_ROUNDS; ++i) {
-			r_i = (op == _shufflep_op_encrypt) ? i : _SHUFFLEP_ROUNDS-1-i;
+		for (i = 0; i < _SHUFFLE_ROUNDS; ++i) {
+			r_i = (op == _shuffle_op_encrypt) ? i : _SHUFFLE_ROUNDS-1-i;
 
 			l1 = r;
-			r1 = l ^ _shufflep_round(ctx, r, r_i);
+			r1 = l ^ _shuffle_round(ctx, r, r_i);
 			l = l1;
 			r = r1 & mask;
 		}
@@ -150,19 +150,19 @@ _shufflep_cipher (struct shufflep_ctx *ctx, size_t val, enum _shufflep_op op)
 }
 
 size_t
-shufflep_index (struct shufflep_ctx *ctx, size_t index)
+shuffle_index (struct shuffle_ctx *ctx, size_t index)
 {
-	return _shufflep_cipher(ctx, index, _shufflep_op_encrypt);
+	return _shuffle_cipher(ctx, index, _shuffle_op_encrypt);
 }
 
 size_t
-shufflep_index_invert (struct shufflep_ctx *ctx, size_t index)
+shuffle_index_invert (struct shuffle_ctx *ctx, size_t index)
 {
-	return _shufflep_cipher(ctx, index, _shufflep_op_decrypt);
+	return _shuffle_cipher(ctx, index, _shuffle_op_decrypt);
 }
 
 void
-shufflep_reseed (struct shufflep_ctx *ctx, size_t seed)
+shuffle_reseed (struct shuffle_ctx *ctx, size_t seed)
 {
 	ctx->key = seed;
 }
