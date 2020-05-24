@@ -163,7 +163,7 @@ input size. While the run time for Fisher-Yates increases linearly, the run time
 shuffle algorithm increases in steps. This highlights the nature of the underlying block
 cipher quite nicely.
 
-### System ###
+#### System Under Test ####
 
 ```
 Intel(R) Core(TM) i7-8650U CPU @ 1.90GHz
