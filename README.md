@@ -141,16 +141,6 @@ Key derivation is done by using a sliding window to extract a few bits each roun
 Performance
 -----------
 
-### Speed ###
-
-![performance graph](plot.svg)
-
-Interestingly shuffle seems to outperform the classic Fisher-Yates algorithm with bigger
-inputs.
-
-My guess is, that we are essentially profiling the system's `rand()` implementation more
-than anything else.
-
 ### Randomness ###
 
 So how random is shuffle? While this might be somewhat difficult to answer, there is a
@@ -164,14 +154,23 @@ Pearson's Chi-squared test included in this repository to check for yourself.
 Both p-values are greater than the typical threshold of 0.05 which suggests the results
 are independent! Be aware that these results vary depending on the input size.
 
+### Speed ###
+
+![performance graph](plot.svg)
+
+Interestingly shuffle seems to outperform the classic Fisher-Yates algorithm depending on
+input size. While the run time for Fisher-Yates increases linearly, the run time for the
+shuffle algorithm increases in steps. This highlights the nature of the underlying block
+cipher quite nicely.
+
 ### System ###
 
 ```
 Intel(R) Core(TM) i7-8650U CPU @ 1.90GHz
 32GiB Memory
 
-Linux 5.4.24-1-lts x86_64
-glibc 2.31-2
+Linux 5.4.42-1-lts x86_64
+glibc 2.31-4
 
 ```
 
