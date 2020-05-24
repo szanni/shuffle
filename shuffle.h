@@ -42,7 +42,7 @@ void shuffle_reseed(struct shuffle_ctx *ctx, size_t seed);
 #ifdef SHUFFLE_IMPLEMENTATION
 
 /* Power of 2! Otherwise change round function sliding window */
-#define _SHUFFLE_ROUNDS 4
+#define _SHUFFLE_ROUNDS 8
 
 enum _shuffle_op {
 	_shuffle_op_encrypt,
