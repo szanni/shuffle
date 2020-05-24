@@ -141,6 +141,8 @@ Key derivation is done by using a sliding window to extract a few bits each roun
 Performance
 -----------
 
+### Speed ###
+
 ![performance graph](plot.svg)
 
 Interestingly shuffle seems to outperform the classic Fisher-Yates algorithm with bigger
@@ -148,6 +150,21 @@ inputs.
 
 My guess is, that we are essentially profiling the system's `rand()` implementation more
 than anything else.
+
+### Randomness ###
+
+So how random is shuffle? While this might be somewhat difficult to answer, there is a
+Pearson's Chi-squared test included in this repository to check for yourself.
+
+| Arch   | P-Value |
+|--------|---------|
+| 32-bit | 0.3083  |
+| 64-bit | 0.2255  |
+
+Both p-values are greater than the typical threshold of 0.05 which suggests the results
+are independent! Be aware that these results vary depending on the input size.
+
+### System ###
 
 ```
 Intel(R) Core(TM) i7-8650U CPU @ 1.90GHz
