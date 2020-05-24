@@ -42,7 +42,7 @@ main (void)
 	size_t n;
 	size_t i;
 	size_t r;
-	size_t const max = 10000000;
+	size_t const max = 100000000;
 	size_t const repeat = 20;
 	clock_t s, e;
 	double t;
@@ -52,7 +52,7 @@ main (void)
 	printf("%-15s %-15s %-15s %-15s %-15s\n", "N", "FY-init", "shufflep-init", "FY-iter-all", "shufflep-iter-all");
 
 	for(n = 10; n <= max; n*=1.1){
-		printf("%-10zu", n);
+		printf("%-15zu", n);
 
 		BENCH("FY-init",
 				{assert(fyiter_new(&fctx, n) == 0);},
