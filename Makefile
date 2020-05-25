@@ -32,7 +32,12 @@ chisqr-bias: chisqr-bias.c shuffle.h
 	$(CC) $< -o $@ $(CFLAGS) $(LDFLAGS)
 
 bias: chisqr-bias chisqr-bias.R
-	./chisqr-bias | Rscript chisqr-bias.R
+	@echo "You might have to increase the memory stack limit by running: ulimit -s unlimited"
+	@./chisqr-bias 100 | Rscript chisqr-bias.R | grep "p-value" | sed "s/^/100: /g"
+	@./chisqr-bias 500 | Rscript chisqr-bias.R | grep "p-value" | sed "s/^/500: /g"
+	@./chisqr-bias 1000 | Rscript chisqr-bias.R | grep "p-value" | sed "s/^/1000: /g"
+	@./chisqr-bias 5000 | Rscript chisqr-bias.R | grep "p-value" | sed "s/^/5000: /g"
+	@./chisqr-bias 10000 | Rscript chisqr-bias.R | grep "p-value" | sed "s/^/10000: /g"
 
 plot: plot.svg
 

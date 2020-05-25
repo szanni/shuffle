@@ -6,11 +6,10 @@
 #include "shuffle.h"
 
 int
-main(void)
+table(unsigned n)
 {
-	const unsigned n = 1000;
-	const unsigned k = n*100;
 	uint16_t O[n][n];
+	const unsigned k = n*1000;
 
 	struct shuffle_ctx ctx;
 	shuffle_init(&ctx, n, 0);
@@ -34,5 +33,18 @@ main(void)
 	}
 
 	return 0;
+}
+
+int
+main(int argc, char **argv)
+{
+	if (argc != 2) {
+		fprintf(stderr, "Usage: %s SIZE\n", argv[0]);
+	}
+
+	unsigned n;
+	sscanf(argv[1], "%u", &n);
+
+	return table(n);
 }
 

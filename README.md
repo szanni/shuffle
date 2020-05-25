@@ -144,15 +144,21 @@ Performance
 ### Randomness ###
 
 So how random is shuffle? While this might be somewhat difficult to answer, there is a
-Pearson's Chi-squared test included in this repository to check for yourself.
+Pearson's Chi-squared Test of Independence included in this repository to check for yourself.
 
-| Arch   | P-Value |
-|--------|---------|
-| 32-bit | 0.3083  |
-| 64-bit | 0.2255  |
+| N      | P-Value 32-bit | P-Value 64-bit |
+|--------|----------------|----------------|
+| 100    | 0.888          | 0.5028         |
+| 500    | 0.1114         | 0.2774         |
+| 1000   | 0.3083         | 0.2255         |
+| 5000   | 0.0009887      | 0.0003274      |
+| 10000  | 1.295e-14      | 2.2e-16        |
 
-Both p-values are greater than the typical threshold of 0.05 which suggests the results
-are independent! Be aware that these results vary depending on the input size.
+While the p-values for smaller input sizes look great, they do not reach the typical threshold of 0.05 for bigger inputs. This suggests the output values are dependent, hence non-random.
+
+So what does that mean for the randomness of shuffle? shuffle will most likely not fool a computer but in all likelihood any human user!
+
+Should you need something more random: literature suggests that a better hash function (e.g. SHA/BLAKE) will give results indistinguishable from true randomness.
 
 ### Speed ###
 
@@ -164,7 +170,6 @@ shuffle algorithm increases in steps. This highlights the nature of the underlyi
 cipher quite nicely.
 
 #### System Under Test ####
-
 ```
 Intel(R) Core(TM) i7-8650U CPU @ 1.90GHz
 32GiB Memory
